@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import React from 'react'
+import React, {useState} from 'react'
 import { useForm, Controller } from 'react-hook-form';
 import {Container, 
         TextField, 
@@ -10,8 +10,46 @@ import {Container,
 } from '@material-ui/core'
 
 export default function Home() {
+  const [info, setInfo] = useState();
+  const [state, setState] = useState();
   const { control, errors, handleSubmit } = useForm();
-  const onSubmit = data => console.log(data);
+  const onSubmit = data => postDID(data);
+  
+  const api = 'https://server.uat.didi.atixlabs.com/api/1.0/didi/';
+  const issuer = 'issuer/';
+  
+
+  const postDID = async value => {
+    console.log(value)
+    setState({did: value.did});
+
+    await fetch(api + issuer, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      mode: "no-cors",
+      body: JSON.stringify({
+        did: value.did
+      })
+    })
+      .then(res => console.log(res))
+      .then(data => setInfo(data));
+    console.log(info)
+  };
+
+  const requestDID = async () => {
+    await fetch(api + issuer + ':' + state.did ,{
+      method: "GET",      
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      mode: "no-cors",
+    })
+      .then(res => console.log(res))
+      .then(data => console.log(data));
+  }
+
   return (
     <>
       <Head>
@@ -66,6 +104,21 @@ export default function Home() {
                 </Grid>
                   
               </form>
+
+              {state ? 
+                <Grid  item xs={12}>
+                  {console.log(did)}
+                  <Typography component="h1" variant="h6" color="inherit">
+                    Verificar Existencia del DID: {state.did}
+                  </Typography>
+                  <Button
+                    onClick={() => requestDID()}
+                    variant="contained"
+                    color="secondary"  
+                  >
+                    Verificar
+                  </Button>
+                </Grid> : null}
 
             </div>
           </Grid>
