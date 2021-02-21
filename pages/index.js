@@ -38,7 +38,7 @@ export default function Home() {
     await fetch(url + issuer, {
       method: "POST",
       headers: {
-        "content-type": "application/json; charset=UTF-8"
+        "content-type": "application/x-www-form-urlencoded; charset=UTF-8"
       },
       mode: "no-cors",
       body: formBody
